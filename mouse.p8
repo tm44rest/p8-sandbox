@@ -51,8 +51,11 @@ function init_mouse(s)
 	mouse_x=0
 	mouse_y=0
 	mouse_button=0
-	mouse_released=0 --active 1f
 	mouse_spr=s
+	--active 1f
+	mouse_left_released=false
+	mouse_right_released=false
+	mouse_mid_released=false
 end
 
 -- updates mouse globals
@@ -61,9 +64,10 @@ function update_mouse()
 	mouse_y=stat(33)-1
 	local temp=mouse_button
 	mouse_button=stat(34)
-	if mouse_button==0 and temp!=0
+	if mouse_button%2==1 and temp%2!=1
 	then
 		mouse_released=temp
+	elseif mouse_button%
 	else
 		mouse_released=0
 	end
@@ -87,9 +91,11 @@ function init_mouse_listeners()
 	listeners={}
 end
 
-function create_mouse_listener(name,x,y,h,w,drw,hov_drw,held_drw)
+function create_mouse_listener(name,x,y,h,w,drw,hov_drw,left_held_drw,right_held_drw,mid_held_drw)
 	hov_drw = hov_drw  or drw
-	held_drw= held_drw or drw
+	left_held_drw= left_held_drw or drw
+	right_held_drw= right_held_drw or drw
+	mid_held_drw= mid_held_drw or drw
 	listeners[name]={
 			x=x,
 			y=y,
@@ -99,8 +105,12 @@ function create_mouse_listener(name,x,y,h,w,drw,hov_drw,held_drw)
 			hov_drw=hov_drw,
 			held_drw=held_drw,
 			hovered=false,
-			held=false,
-			clicked=false
+			left_clicked=false,
+			right_clicked=false,
+			mid_clicked=false,
+			left_held=false,
+			right_held=false,
+			mid_held=false
 		}
 	
 end
@@ -112,18 +122,20 @@ function update_mouse_listeners()
 			then
 				b.hovered=true
 				if mouse_button==1 then
-					b.held=true
+					b.left_held=true
 					b.clicked=false
 				elseif mouse_released==1 then
 					b.clicked=true
-					b.held=false
+					b.left_held=false
 				else
-					b.held=false
+					b.left_held=false
 					b.clicked=false
 				end
 			else
 				b.hovered=false
-				b.held=false
+				b.left_held=false
+				b.mid_held=false
+				b.right_held=false
 				b.clicked=false
 			end
 		end
@@ -131,8 +143,10 @@ end
 
 function draw_mouse_listeners()
 	for n,b in pairs(listeners) do
-		if b.held then
-			b.held_drw()
+		if b.left_held then
+			b.left_held_drw()
+		elseif b.right_held then
+			b.right_held_drw()
 		elseif b.hovered then
 			b.hov_drw()
 		else

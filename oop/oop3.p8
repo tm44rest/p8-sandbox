@@ -8,7 +8,7 @@ __lua__
 -- need extensive hierarchies,
 -- just default functions for
 -- objects (which is the real
--- advantage of oop)
+-- advantage of oop in p8)
 types={}
 objects={}
 
